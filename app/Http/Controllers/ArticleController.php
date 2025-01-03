@@ -109,7 +109,9 @@ class ArticleController extends Controller
      */
     public function create()
     {
-
+        if (!auth()->check() || !auth()->user()->is_admin) {
+            return redirect()->route('articles.index')->with('error', 'Unauthorized access.');
+        }
         $categories = Category::all(); // Fetch all categories from the database
         return view('articles.create', compact('categories'));
     }
@@ -119,10 +121,13 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
+        if (!auth()->check() || !auth()->user()->is_admin) {
+            return redirect()->route('articles.index')->with('error', 'Unauthorized access.');
+        }
         $article = new Article();
         $article->title = $request->input('title');
         $article->content = $request->input('content');
-        $article->published_by = $request->input('published_by');
+        $article->published_by =auth()->user()->name;
         $article->user_id = Auth::id();
         $article->save();
         return redirect()->route('articles.index');
@@ -139,24 +144,46 @@ class ArticleController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Article $article)
+    public function edit($id)
     {
-        //
+        if (!auth()->check() || !auth()->user()->is_admin) {
+            return redirect()->route('articles.index')->with('error', 'Unauthorized access.');
+        }
+        $article = Article::findOrFail($id); // Find the article by ID
+        return view('articles.edit', compact('article')); // Pass the article to the edit view
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Article $article)
+    public function update(Request $request, $id)
     {
-        //
+        if (!auth()->check() || !auth()->user()->is_admin) {
+            return redirect()->route('articles.index')->with('error', 'Unauthorized access.');
+        }
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string', // Assuming you have a content field
+            'visible' => 'boolean', // Assuming you have a visible field
+        ]);
+
+        $article = Article::findOrFail($id); // Find the article by ID
+        $article->update($request->only(['title', 'content', 'visible'])); // Update the article
+
+        return redirect()->route('articles.index')->with('success', 'Article updated successfully!'); // Redirect with success message
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Article $article)
+    public function destroy($id)
     {
-        //
+        if (!auth()->check() || !auth()->user()->is_admin) {
+            return redirect()->route('articles.index')->with('error', 'Unauthorized access.');
+        }
+        $article = Article::findOrFail($id); // Find the article by ID
+        $article->delete(); // Delete the article
+
+        return redirect()->route('articles.admin_index')->with('success', 'Article deleted successfully!'); // Redirect with success message
     }
 }

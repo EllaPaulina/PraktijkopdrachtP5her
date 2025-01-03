@@ -12,6 +12,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
+        if (!auth()->check() || !auth()->user()->is_admin) {
+            return redirect()->route('articles.index')->with('error', 'Unauthorized access.');
+        }
         $categories = Category::all();
         return view('category.index', compact('categories'));
     }

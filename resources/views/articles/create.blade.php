@@ -15,9 +15,6 @@
         <label for="content">Article Content:</label>
         <textarea id="content" name="content"></textarea>
 
-        <label for="published_by">Published By:</label>
-        <input type="text" id="published_by" name="published_by">
-
         <button type="submit">Submit</button>
     </form>
 </x-layout>
