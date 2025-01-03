@@ -42,14 +42,15 @@ class ArticleController extends Controller
 
     public function adminIndex()
     {
-        // Ensure the user is authenticated and is an admin
-        if (!auth()->user() || !auth()->user()->is_admin) {
+        // Check if the user is authenticated
+        if (!auth()->check() || !auth()->user()->is_admin) {
             return redirect()->route('articles.index')->with('error', 'Unauthorized access.');
         }
 
-        // Fetch all articles from the database
-        $articles = Article::all(); // This retrieves the latest state of visibility
+        // Fetch articles for the admin view
+        $articles = Article::all(); // Adjust this query as needed
 
+        // Return the admin index view with articles
         return view('articles.admin_index', compact('articles'));
     }
 

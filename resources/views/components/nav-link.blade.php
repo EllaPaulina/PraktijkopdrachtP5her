@@ -7,23 +7,5 @@ $classes = ($active ?? false)
 @endphp
 
 <a {{ $attributes->merge(['class' => $classes]) }}>
-
-    @auth
-        <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-            @csrf
-            <button type="submit" class="nav-link">Logout</button>
-        </form>
-    @endauth
-
-    @if(auth()->check() && auth()->user()->is_admin === 1)
-        <a href="{{ route('articles.create') }}" class="nav-link">
-            Create New Article
-        </a>
-
-        <a href="{{route('articles.admin_index') }}" class="nav-link"> Manage Articles</a>
-
-        <a href="{{ route('categories.create') }}" class="nav-link">
-            Create New Category
-        </a>
-    @endif
+    {{ $slot }}
 </a>
