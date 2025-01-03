@@ -14,20 +14,20 @@
     <h2>Articles</h2>
     @if($articles->count())
         @foreach($articles as $article)
-            <div>
+            <section class="articles">
                 <h3>ID:</h3> {{ $article->id }}
                 <h1>Title:</h1> {{ $article->title }}
                 <p>Content:</p> {{ $article->content }}
                 <p>Category:</p> {{ $article->category->name ?? 'No category' }}</p>
                 <p>Published By:</p> {{ $article->published_by }}</p>
                 <!-- Comments Section -->
-                <div>
+                <section class="comment-section">
                     <h4>Comments:</h4>
                     @if($article->comments->count())
                         @foreach($article->comments as $comment)
-                            <div>
+                            <section class="comment">
                                 <p>
-                                    <strong>{{ $comment->user->name }}</strong>: {{ $comment->body }}
+                                    <p>{{ $comment->user->name }}</p>: {{ $comment->body }}
                                     @if(auth()->check() && auth()->user()->is_admin)
                                         <!-- Delete Button for Admin -->
                                 <form action="{{ route('comments.destroy', $comment->id) }}" method="POST">
@@ -37,8 +37,8 @@
                                 </form>
                                 @endif
                                 </p>
-                                <small>Posted on {{ $comment->created_at->format('M d, Y') }}</small>
-                            </div>
+                                <p>Posted on {{ $comment->created_at->format('M d, Y') }}</p>
+                            </section>
                         @endforeach
                     @else
                         <p>No comments yet. Be the first to comment!</p>
@@ -54,7 +54,8 @@
                     @else
                         <p><a href="{{ route('login') }}">Log in</a> to leave a comment.</p>
                     @endauth
-                </div>
+                </section>
+            </section>
         @endforeach
     @else
         <p>No articles found.</p>
