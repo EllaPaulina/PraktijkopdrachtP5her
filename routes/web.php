@@ -19,13 +19,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/',[ArticleController::class,'index'])->name('articles.index');
+// About Us
+Route::get('/', function () {
+    return view('home');
+})->name('home');
 
-Route::get('/articles', [ArticleController::class, 'index'])->middleware(['auth'])->name('articles.index');
-Route::resource('articles', ArticleController::class)->middleware(['auth']);
+
+Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
+Route::resource('articles', ArticleController::class);
 Route::resource('categories', CategoryController::class)->middleware(['auth']);
 Route::get('/search', [ArticleController::class, 'search'])->name('articles.search');
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+Route::get('articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
 
 Route::post('/articles/{article}/comments', [CommentController::class, 'store'])
     ->middleware('auth')

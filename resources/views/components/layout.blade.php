@@ -10,9 +10,9 @@
 <body>
 <nav class="main-nav">
     <div class="nav-left">
+        <a href="{{route('articles.index')}}">Articles</a>
+        <a href="{{route('home')}}">About Us</a>
         @auth
-
-            <a href="{{route('articles.index')}}">Articles</a>
 
             @if(auth()->user()->is_admin) <!-- Check if the user is an admin -->
             <a href="{{ route('articles.admin_index') }}">Manage Articles</a>

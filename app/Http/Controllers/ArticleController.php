@@ -78,15 +78,18 @@ class ArticleController extends Controller
      */
     public function index(Request $request)
     {
-
-        // Fetch only visible articles and make sure to load categories with articles
-        $articles = Article::with('category')->where('visible', true)->get();
+        // Fetch only visible articles, order by created_at in descending order, and load categories with articles
+        $articles = Article::with('category')
+            ->where('visible', true)
+            ->orderBy('created_at', 'desc')  // Order by created_at (latest first)
+            ->get();
 
         // Fetch all categories to pass to the view for filter options
         $categories = Category::all();
 
         return view('articles.index', compact('articles', 'categories'));
     }
+
 
 
 
@@ -123,7 +126,14 @@ class ArticleController extends Controller
         if ($request->hasFile('image')) {
             $filePath = $request->file('image')->store('articles', 'public');
             $validated['image'] = $filePath;
+        } else {
+            // If no image is uploaded, set the default image
+            $validated['image'] = 'articles/default.png'; // Path to default image
         }
+
+        // Add the published_by field (using the logged-in user's name or ID)
+        $validated['user_id'] = Auth::id();  // Use the authenticated user's ID
+        $validated['published_by'] = Auth::user()->name;  // or use Auth::user()->id if you want the ID
 
         // Create the article
         Article::create($validated);
@@ -134,13 +144,23 @@ class ArticleController extends Controller
 
 
 
+
+
     /**
      * Display the specified resource.
      */
-    public function show(Article $article)
+    public function show($id)
     {
-        //
+        // Fetch the article along with its comments (with pagination) and category
+        $article = Article::with('comments.user', 'category') // Assuming you have user relationship with comments
+        ->findOrFail($id);
+
+        // Paginate the comments (10 per page)
+        $comments = $article->comments()->paginate(10);
+
+        return view('articles.show', compact('article', 'comments'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
