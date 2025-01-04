@@ -42,15 +42,14 @@ class ArticleController extends Controller
 
     public function adminIndex()
     {
-        // Check if the user is authenticated
-        if (!auth()->check() || !auth()->user()->is_admin) {
+        // Ensure the user is authenticated and is an admin
+        if (!auth()->user() || !auth()->user()->is_admin) {
             return redirect()->route('articles.index')->with('error', 'Unauthorized access.');
         }
 
-        // Fetch articles for the admin view
-        $articles = Article::all(); // Adjust this query as needed
+        // Fetch all articles from the database
+        $articles = Article::all(); // This retrieves the latest state of visibility
 
-        // Return the admin index view with articles
         return view('articles.admin_index', compact('articles'));
     }
 
@@ -59,29 +58,17 @@ class ArticleController extends Controller
 
     public function toggleVisibility($id)
     {
-        // Find the article by ID
         $article = Article::find($id);
 
         if ($article) {
-            // Toggle the visibility value
-            $newVisibility = !$article->visible; // This will be true if it was false, and vice versa
+            $article->visible = !$article->visible;
+            $article->save();
 
-            // Update the visibility in the database
-            $article->update(['visible' => $newVisibility]);
-
-            // Determine the status message
-            $status = $newVisibility ? 'visible' : 'hidden';
-
-            // Redirect with success message
-            return redirect()->back()->with('success', "Article visibility updated successfully! The article is now {$status}.");
+            return redirect()->back()->with('success', 'Article visibility updated successfully.');
         }
 
-        // Redirect with error if the article wasn't found
         return redirect()->back()->with('error', 'Article not found.');
     }
-
-
-
 
 
 
@@ -119,19 +106,33 @@ class ArticleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        if (!auth()->check() || !auth()->user()->is_admin) {
-            return redirect()->route('articles.index')->with('error', 'Unauthorized access.');
+        // Validate the request input
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'category_id' => 'required|exists:categories,id', // Ensure a valid category is selected
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validate the image if provided
+        ]);
+
+        // Handle image upload if an image is provided
+        if ($request->hasFile('image')) {
+            $filePath = $request->file('image')->store('articles', 'public');
+            $validated['image'] = $filePath;
         }
-        $article = new Article();
-        $article->title = $request->input('title');
-        $article->content = $request->input('content');
-        $article->published_by =auth()->user()->name;
-        $article->user_id = Auth::id();
-        $article->save();
-        return redirect()->route('articles.index');
+
+        // Create the article
+        Article::create($validated);
+
+        // Redirect back to the articles index with a success message
+        return redirect()->route('articles.index')->with('success', 'Article created successfully!');
     }
+
+
 
     /**
      * Display the specified resource.
@@ -156,22 +157,50 @@ class ArticleController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    /**
+     * Update the specified resource in storage.
+     */
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, $id)
     {
-        if (!auth()->check() || !auth()->user()->is_admin) {
-            return redirect()->route('articles.index')->with('error', 'Unauthorized access.');
-        }
+        // Validate the incoming request data
         $request->validate([
             'title' => 'required|string|max:255',
-            'content' => 'required|string', // Assuming you have a content field
-            'visible' => 'boolean', // Assuming you have a visible field
+            'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $article = Article::findOrFail($id); // Find the article by ID
-        $article->update($request->only(['title', 'content', 'visible'])); // Update the article
+        // Find the article by ID
+        $article = Article::findOrFail($id);
+        $article->title = $request->input('title');
+        $article->content = $request->input('content');
 
-        return redirect()->route('articles.index')->with('success', 'Article updated successfully!'); // Redirect with success message
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete the old image if it exists
+            if ($article->image && file_exists(public_path('storage/' . $article->image))) {
+                unlink(public_path('storage/' . $article->image));
+            }
+
+            // Store the new image with the original filename
+            $fileName = $request->file('image')->getClientOriginalName(); // Get the original file name
+            $path = $request->file('image')->storeAs('articles', $fileName, 'public');
+            $article->image = $path; // Save the path with the original file name
+        }
+
+        // Save the updated article
+        $article->save();
+
+        // Redirect back to the articles index with a success message
+        return redirect()->route('articles.index')->with('success', 'Article updated successfully.');
     }
+
+
+
+
+
 
     /**
      * Remove the specified resource from storage.

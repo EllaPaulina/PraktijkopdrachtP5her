@@ -11,15 +11,16 @@
         </select>
         <button type="submit">Search</button>
     </form>
-    <h2>Articles</h2>
+    <h1 class ="page-title">Articles</h1>
     @if($articles->count())
         @foreach($articles as $article)
             <section class="articles">
-                <h3>ID:</h3> {{ $article->id }}
-                <h1>Title:</h1> {{ $article->title }}
-                <p>Content:</p> {{ $article->content }}
-                <p>Category:</p> {{ $article->category->name ?? 'No category' }}</p>
-                <p>Published By:</p> {{ $article->published_by }}</p>
+                <img src="{{ asset('storage/' . $article->image) }}" alt="{{ $article->title }}" style="max-width: 200px;">
+
+                <h2>{{ $article->title }}</h2>
+                <p>{{ $article->content }}</p>
+                <p>{{ $article->category->name ?? 'No category' }}</p>
+                <p>Published By:{{ $article->published_by }}</p>
                 <!-- Comments Section -->
                 <section class="comment-section">
                     <h4>Comments:</h4>

@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
+    use HasFactory;
+
+    protected $fillable = ['title', 'content', 'image', 'visible']; // Ensure 'visible' is included
     public function articles(): HasMany
     {
         return $this->hasMany(Article::class);

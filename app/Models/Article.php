@@ -6,9 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Category;
 
+/**
+ * @method static find($id)
+ * @method static create(array $validated)
+ * @method static findOrFail($id)
+ */
 class Article extends Model
 {
-    use HasFactory;
 
     // Specify the fillable properties
     protected $fillable = [
@@ -17,13 +21,16 @@ class Article extends Model
         'published_by',
         'user_id',
         'category_id',
-        'visible', // Add this line
+        'visible',
+        'image',// Add this line
     ];
 
     // Specify casts for attributes
     protected $casts = [
         'visible' => 'boolean',
     ];
+    protected $guarded = [];
+
 
     public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

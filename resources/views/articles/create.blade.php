@@ -14,6 +14,8 @@
 
         <label for="content">Article Content:</label>
         <textarea id="content" name="content"></textarea>
+        <label for="image">Upload Image</label>
+        <input type="file" name="image" accept="image/*">
 
         <button type="submit">Submit</button>
     </form>

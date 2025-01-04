@@ -4,34 +4,38 @@
     <h1>Edit Article</h1>
 
     @if ($errors->any())
-        <div>
-            <strong>Whoops!</strong> There were some problems with your input.<br><br>
+        <section class="errors">
+            <h3>Whoops!</h3> There were some problems with your input.<br><br>
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
             </ul>
-        </div>
+        </section>
     @endif
 
-    <form action="{{ route('articles.update', $article->id) }}" method="POST">
+    <form action="{{ route('articles.update', $article->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT') <!-- Specify the PUT method for updates -->
 
-        <div>
+        <section class="article-title">
             <label for="title">Title:</label>
             <input type="text" id="title" name="title" value="{{ old('title', $article->title) }}" required>
-        </div>
+        </section>
 
-        <div>
+        <section class="article-content">
             <label for="content">Content:</label>
             <textarea id="content" name="content" required>{{ old('content', $article->content) }}</textarea>
-        </div>
+        </section>
+        <section class="article-image">
+        <label for="image">Upload Image</label>
+        <input type="file" name="image" enctype="multipart/form-data">
+        </section>
 
-        <div>
+        <section class="article-visibility">
             <label for="visible">Visible:</label>
             <input type="checkbox" id="visible" name="visible" value="1" {{ $article->visible ? 'checked' : '' }}>
-        </div>
+        </section>
 
         <button type="submit">Update Article</button>
     </form>
