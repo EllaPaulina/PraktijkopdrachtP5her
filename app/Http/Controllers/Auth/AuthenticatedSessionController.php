@@ -27,6 +27,11 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        // Increment the login count after successful authentication
+        $user = Auth::user();
+        $user->increment('login_count'); // Increment the login count
+        $user->save(); // Save the updated user record
+
         $request->session()->regenerate();
 
         return redirect()->intended('articles');

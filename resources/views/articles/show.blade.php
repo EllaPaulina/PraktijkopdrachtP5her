@@ -30,13 +30,21 @@
 
             <!-- Add Comment Form -->
             @auth
-                <form action="{{ route('comments.store', $article->id) }}" method="POST">
-                    @csrf
-                    <textarea name="body" rows="3" placeholder="Add a comment..." required></textarea>
-                    <button type="submit">Submit</button>
-                </form>
+                @php
+                    $remainingLogins = 3 - auth()->user()->login_count;
+                @endphp
+
+                @if($remainingLogins > 0)
+                    <p>You need to log in {{ $remainingLogins }} more time(s) to comment.</p>
+                @else
+                    <form action="{{ route('comments.store', $article->id) }}" method="POST">
+                        @csrf
+                        <textarea name="body" rows="3" placeholder="Add a comment..." required></textarea>
+                        <button type="submit">Submit</button>
+                    </form>
+                @endif
             @else
-                <p><a href="{{ route('login') }}">Log in</a> or <a href="{{route('register')}}">Register</a> to leave a comment.</p>
+                <p><a href="{{ route('login') }}">Log in</a> or <a href="{{ route('register') }}">Register</a> to leave a comment.</p>
             @endauth
         </section>
     </section>
