@@ -43,5 +43,6 @@
 
 ## 05-01-2025
 - final css fixes
+- final bug fixes
 - final push
 - upload op Brightspace
