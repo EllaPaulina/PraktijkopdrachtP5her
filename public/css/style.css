@@ -9,11 +9,21 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
 }
 
+/* Navigation links */
+.main-nav a {
+    color: white; /* Default color for navigation items */
+    text-decoration: none; /* Remove underline */
+    transition: color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.main-nav a:hover {
+    color: #FFC0CB; /* Pink color on hover */
+}
+
 /* Left side links */
 .nav-left {
     display: flex;
     gap: 15px;
-
 }
 
 /* Right side buttons */
@@ -21,6 +31,7 @@
     display: flex;
     gap: 15px;
 }
+
 /* General Styles */
 body {
     font-family: 'Arial', sans-serif;

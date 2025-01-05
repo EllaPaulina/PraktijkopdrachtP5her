@@ -40,3 +40,8 @@
 - login counter
 - about us pagina(home)
 - user test
+
+## 05-01-2025
+- final css fixes
+- final push
+- upload op Brightspace
