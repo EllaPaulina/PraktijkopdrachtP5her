@@ -19,13 +19,13 @@ class ArticleController extends Controller
         //query voor model
         $articles = Article::query();
 
-        //mogelijkheid search op title en inhoud
         if ($queryText) {
             $articles->where(function ($query) use ($queryText) {
-                $query->where('name', 'like', '%' . $queryText . '%');
-
+                $query->where('title', 'like', '%' . $queryText . '%')
+                    ->orWhere('content', 'like', '%' . $queryText . '%');
             });
         }
+
 
         //category filter toevoegen
         if ($categoryId) {
